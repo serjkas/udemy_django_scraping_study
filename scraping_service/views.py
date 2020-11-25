@@ -11,4 +11,4 @@ def home(request):
         'name': name
     }
 
-    return render(request, 'home.html', content)
+    return render(request, 'base.html', content)
