@@ -9,7 +9,7 @@ class City(models.Model):
     name = models.CharField(verbose_name='Название города',
                             max_length=50,
                             unique=True)
-    slug = models.CharField(max_length=50, blank=True, unique=True)
+    slug = models.SlugField(max_length=50, blank=True, unique=True)
 
     class Meta:
         verbose_name = 'Название города'
@@ -20,7 +20,8 @@ class City(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = from_cyrillic_to_eng(str(self.name))
+            # self.slug = from_cyrillic_to_eng(str(self.name))
+            self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
 

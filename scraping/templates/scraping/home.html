@@ -12,14 +12,17 @@
             <p>{{ obj.city.name }} | {{ obj.language }} | <small>{{ obj.timestamp}}</small></p>
           </div>
         </div>
-
-
-
+    {% empty %}
+        <div class="row">
+            <div class="mx-auto">
+                <h3>По запросу ничего не найдено</h3>
+            </div>
+        </div>
     {% endfor %}
 
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 mx-auto">
         <form method="get" action="">
           <div class="form-group">
               {{ form.as_p }}
