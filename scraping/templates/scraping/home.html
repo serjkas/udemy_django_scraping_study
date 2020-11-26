@@ -18,9 +18,16 @@
     {% endfor %}
 
 
-<form method="get" action="">
-  {{ form.as_p }}
-  <input type="submit" name="Submit">
-</form>
+<div class="row">
+    <div class="col-md-6">
+        <form method="get" action="">
+          <div class="form-group">
+              {{ form.as_p }}
+          </div>
+          <button type="submit" class="btn btn-primary">Найти</button>
+        </form>
+    </div>
+</div>
+
 
 {% endblock %}
