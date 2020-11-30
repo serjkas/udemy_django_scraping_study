@@ -1,9 +1,19 @@
 import requests
 import codecs
 from bs4 import BeautifulSoup as BS
+from random import randint
 
-headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 5.1; rv:47.0) Gecko/20100101 Firefox/47.0',
-           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+__all__ = ('work', 'rabota', 'dou', 'djinni')
+
+headers = [
+    {'User-Agent': 'Mozilla/5.0 (Windows NT 5.1; rv:47.0) Gecko/20100101 Firefox/47.0',
+     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'},
+    {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 5.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/49.0.2623.112 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'},
+    {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; rv:53.0) Gecko/20100101 Firefox/53.0',
+     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'}
+]
 
 
 def work(url):
@@ -43,7 +53,7 @@ def rabota(url):
     errors = []
     domain_ua = 'https://rabota.ua'
 
-    res = requests.get(url, headers=headers)
+    res = requests.get(url, headers=headers[randint(0, 2)])
 
     if res.status_code == 200:
         soup = BS(res.content, 'html.parser')
@@ -84,7 +94,7 @@ def dou(url):
     # url = 'https://www.work.ua/jobs-python/'
     # https://jobs.dou.ua/vacancies/?search=python
 
-    res = requests.get(url, headers=headers)
+    res = requests.get(url, headers=headers[randint(0, 2)])
 
     if res.status_code == 200:
         soup = BS(res.content, 'html.parser')
@@ -119,7 +129,7 @@ def djinni(url):
     # https://jobs.dou.ua/vacancies/?search=python
     # https://djinni.co/jobs/keyword-python/kyiv/
 
-    res = requests.get(url, headers=headers)
+    res = requests.get(url, headers=headers[randint(0, 2)])
 
     if res.status_code == 200:
         soup = BS(res.content, 'html.parser')
@@ -134,10 +144,10 @@ def djinni(url):
                 cont = li.find('div', attrs={'class': 'list-jobs__description'})
                 descriptions = cont.text
                 company = 'no name'
-                comp = title.find('a', attrs={'class': 'list-jobs__details__info'})
+                comp = li.find('div', attrs={'class': 'list-jobs__details__info'})
                 if a:
                     company = comp.text
-                    jobs_list.append({'title': title.text, 'url': href,
+                    jobs_list.append({'title': title.text, 'url': domain_ua + href,
                                       'description': descriptions, 'company': company})
         else:
             errors.append({'url': url, 'code': res.status_code, 'title': 'div has not founded'})
@@ -146,12 +156,11 @@ def djinni(url):
     return jobs_list, errors
 
 
-
 if __name__ == '__main__':
-    print("start")
+    print("start parsing")
     url = 'https://djinni.co/jobs/keyword-python/kyiv/'
     jobs_list, errors = djinni(url)
 
-    h = codecs.open('work.txt', 'w', 'utf-8')
+    h = codecs.open('../work.txt', 'w', 'utf-8')
     h.write(str(jobs_list))
     h.close()
