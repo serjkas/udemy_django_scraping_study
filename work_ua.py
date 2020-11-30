@@ -111,10 +111,46 @@ def dou(url):
     return jobs_list, errors
 
 
+def djinni(url):
+    jobs_list = []
+    errors = []
+    domain_ua = 'https://djinni.co'
+    # url = 'https://www.work.ua/jobs-python/'
+    # https://jobs.dou.ua/vacancies/?search=python
+    # https://djinni.co/jobs/keyword-python/kyiv/
+
+    res = requests.get(url, headers=headers)
+
+    if res.status_code == 200:
+        soup = BS(res.content, 'html.parser')
+        main_ul = soup.find('ul', attrs={'class': 'list-jobs'})
+        if main_ul:
+            li_list = main_ul.find_all('li', attrs={'class': 'list-jobs__item'})
+            # for debug
+            a = 1
+            for li in li_list:
+                title = li.find('div', attrs={'class': 'list-jobs__title'})
+                href = title.a['href']
+                cont = li.find('div', attrs={'class': 'list-jobs__description'})
+                descriptions = cont.text
+                company = 'no name'
+                comp = title.find('a', attrs={'class': 'list-jobs__details__info'})
+                if a:
+                    company = comp.text
+                    jobs_list.append({'title': title.text, 'url': href,
+                                      'description': descriptions, 'company': company})
+        else:
+            errors.append({'url': url, 'code': res.status_code, 'title': 'div has not founded'})
+    else:
+        errors.append({'url': url, 'code': res.status_code, 'title': 'Page not found'})
+    return jobs_list, errors
+
+
+
 if __name__ == '__main__':
     print("start")
-    url = 'https://jobs.dou.ua/vacancies/?search=python'
-    jobs_list, errors = dou(url)
+    url = 'https://djinni.co/jobs/keyword-python/kyiv/'
+    jobs_list, errors = djinni(url)
 
     h = codecs.open('work.txt', 'w', 'utf-8')
     h.write(str(jobs_list))
