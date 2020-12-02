@@ -5,6 +5,13 @@ from django.utils.text import slugify
 from scraping.utils import from_cyrillic_to_eng
 
 
+def default_urls():
+    return {"work": '',
+            'rabota': '',
+            'dou': '',
+            'djinni': ''}
+
+
 class City(models.Model):
     name = models.CharField(verbose_name='Название города',
                             max_length=50,
@@ -67,3 +74,13 @@ class Error(models.Model):
     # data = models.JSONField()
     data = jsonfield.JSONField()
     # {'url': url, 'code': res.status_code, 'title': 'div has not founded'}
+
+
+class Url(models.Model):
+    city = models.ForeignKey('City', on_delete=models.CASCADE, verbose_name='Город')
+    language = models.ForeignKey('Language', on_delete=models.CASCADE, verbose_name='Язык программирования')
+    url_data = jsonfield.JSONField(default=default_urls)
+
+    class Meta:
+        # уникальные поля
+        unique_together = ("city", 'language')
