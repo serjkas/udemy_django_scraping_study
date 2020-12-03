@@ -1,3 +1,4 @@
+import asyncio
 import codecs
 import os, sys
 
@@ -24,6 +25,7 @@ parsers = (
     (rabota, 'rabota'),
     (djinni, 'djinni')
 )
+jobs_list, errors = [], []
 
 
 def get_settings():
@@ -47,26 +49,33 @@ def get_urls(_settings):
     return urls
 
 
+async def main(values):
+    func, url, city, language = values
+    job, err = await loop.run_in_executor(None, func, url, city, language)
+    errors.extend(err)
+    jobs_list.extend(job)
+
+
 settings = get_settings()
 # print(q)
 url_list = get_urls(settings)
 
-# city = City.objects.filter(slug='kiev').first()
-# language = Language.objects.filter(slug='python').first()
+loop = asyncio.get_event_loop()
+tmp_tasks = [(func, data['url_data'][key], data['city'], data['language'])
+             for data in url_list
+             for func, key in parsers]
 
-jobs_list, errors = [], []
+tasks = asyncio.wait([loop.create_task(main(f)) for f in tmp_tasks])
+# for data in url_list:
+#
+#     for func, key in parsers:
+#         url = data['url_data'][key]
+#         j, e = func(url, city=data['city'], language=data['language'])
+#         jobs_list += j
+#         errors += e
 
-import time
-
-start = time.time()
-
-for data in url_list:
-
-    for func, key in parsers:
-        url = data['url_data'][key]
-        j, e = func(url, city=data['city'], language=data['language'])
-        jobs_list += j
-        errors += e
+loop.run_until_complete(tasks)
+loop.close()
 
 for job in jobs_list:
     # **job формируются\названы ключи в модели так же как и названные поля с парсинга
