@@ -16,15 +16,13 @@ django.setup()
 from django.db import DatabaseError
 from scraping.models import Vacancy, City, Language, Error, Url
 
-jobs_list, errors = [], []
-
 User = get_user_model()
 
 parsers = (
-    (work, 'https://www.work.ua/jobs-python/'),
-    (dou, 'https://jobs.dou.ua/vacancies/?search=python'),
-    (rabota, 'https://rabota.ua/zapros/python/%d1%83%d0%ba%d1%80%d0%b0%d0%b8%d0%bd%d0%b0'),
-    (djinni, 'https://djinni.co/jobs/keyword-python/')
+    (work, 'work'),
+    (dou, 'dou'),
+    (rabota, 'rabota'),
+    (djinni, 'djinni')
 )
 
 
@@ -42,25 +40,37 @@ def get_urls(_settings):
         tmp = {}
         tmp['city'] = pair[0]
         tmp['language'] = pair[1]
+        # print(tmp)
         tmp['url_data'] = url_dict[pair]
         urls.append(tmp)
+
     return urls
 
 
-q = get_settings()
-u = get_urls(q)
+settings = get_settings()
+# print(q)
+url_list = get_urls(settings)
 
-city = City.objects.filter(slug='kiev').first()
-language = Language.objects.filter(slug='python').first()
+# city = City.objects.filter(slug='kiev').first()
+# language = Language.objects.filter(slug='python').first()
 
-for func, url in parsers:
-    j, e = func(url)
-    jobs_list += j
-    errors += e
+jobs_list, errors = [], []
+
+import time
+
+start = time.time()
+
+for data in url_list:
+
+    for func, key in parsers:
+        url = data['url_data'][key]
+        j, e = func(url, city=data['city'], language=data['language'])
+        jobs_list += j
+        errors += e
 
 for job in jobs_list:
     # **job формируются\названы ключи в модели так же как и названные поля с парсинга
-    v = Vacancy(**job, city=city, language=language)
+    v = Vacancy(**job)
     try:
         v.save()
     except DatabaseError:
