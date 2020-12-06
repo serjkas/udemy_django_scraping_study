@@ -1,5 +1,4 @@
 import asyncio
-import codecs
 import os, sys
 
 from django.contrib.auth import get_user_model
@@ -15,7 +14,7 @@ import django
 django.setup()
 
 from django.db import DatabaseError
-from scraping.models import Vacancy, City, Language, Error, Url
+from scraping.models import Vacancy,  Error, Url
 
 User = get_user_model()
 
@@ -43,8 +42,10 @@ def get_urls(_settings):
         tmp['city'] = pair[0]
         tmp['language'] = pair[1]
         # print(tmp)
-        tmp['url_data'] = url_dict[pair]
-        urls.append(tmp)
+        url_data = url_dict.get(pair)
+        if url_data:
+            tmp['url_data'] = url_dict.get(pair)
+            urls.append(tmp)
 
     return urls
 

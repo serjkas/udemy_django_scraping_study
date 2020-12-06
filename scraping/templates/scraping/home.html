@@ -5,13 +5,13 @@
 {% block content %}
 <div class="row">
     <div class="col">
-        <h2>Сервис по сбору и рассылки вакансий</h2>
+        <h2 class=" text-center my-3">Сервис по сбору и рассылки вакансий</h2>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-6 mx-auto">
-        <h4>Для просмотра вакансий, заполните форму по одному\двум из полей</h4>
+    <div class="col-md-8 mx-auto">
+        <h4 class=" text-center my-2">Для просмотра вакансий, заполните форму по одному\двум из полей</h4>
         <form method="get" action="{% url 'list' %}">
           <div class="form-group">
               {{ form.as_p }}
