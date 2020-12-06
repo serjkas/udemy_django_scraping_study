@@ -15,6 +15,10 @@
           </div>
           <button type="submit" class="btn btn-primary">Войти</button>
         </form>
+        <form method="POST" action="{% url 'accounts:register' %}">
+            {% csrf_token %}
+          <button type="submit" class="btn btn-dark my-3">Зарегистрироваться</button>
+        </form>
     </div>
 </div>
 
