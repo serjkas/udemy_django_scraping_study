@@ -26,3 +26,5 @@ class FindForm(forms.Form):
             'class': 'form-control'
         })
     )
+
+
